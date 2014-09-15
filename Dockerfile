@@ -9,7 +9,8 @@
 
 
 FROM ubuntu
-MAINTAINER Abishek Baskaran
+# Original MAINTAINER Abishek Baskaran
+MAINTAINER Richard Magahiz
 
 # Initial update
 RUN apt-get update
@@ -38,7 +39,8 @@ RUN wget https://download.elasticsearch.org/logstash/logstash/logstash-1.4.2.tar
 	rm logstash-1.4.2.tar.gz && \
 	mv logstash-1.4.2 logstash && \
 	touch logstash.conf && \
-	echo 'input { tcp { port => 3333 type => "text event"} tcp { port => 3334 type => "json event" codec => json_lines {} } }' >> logstash.conf && \
+	echo 'input { tcp { port => 3333 type => "syslog"} tcp { port => 3334 type => "json event" codec => json_lines {} } }' >> logstash.conf && \
+        echo 'filter { if [type] == "syslog" { grok { match => { "message" => "%{SYSLOGTIMESTAMP:syslog_timestamp} %{SYSLOGHOST:syslog_hostname} %{DATA:syslog_program}(?:\[%{POSINT:syslog_pid}\])?: %{GREEDYDATA:syslog_message}" } add_field => [ "received_at", "%{@timestamp}" ] add_field => [ "received_from", "%{host}" ] } syslog_pri { } date { match => [ "syslog_timestamp", "MMM  d HH:mm:ss", "MMM dd HH:mm:ss" ] } } }' >> logstash.conf && \
 	echo 'output { elasticsearch { host => localhost } }' >> logstash.conf 
 
 # Kibana installation

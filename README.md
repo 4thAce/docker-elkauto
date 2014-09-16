@@ -18,8 +18,10 @@ Run: docker run -d -h elk --name elk -p 80:80 -p 3333:3333 -p 3334:3334 -p 9200:
 To redirect the Elasticsearch data to a local volume do something 
 like this
 
+```
 export ES_DATA="-v /mnt/elasticsearch:/var/lib/elasticsearch"
 docker run -d -h elk --name elk -p 80:80 -p 3333:3333 -p 3334:3334 -p 9200:9200 ${ES_DATA} 4thace/elk /elk_start.sh
+```
 
 To run in interactive mode for debugging
 
@@ -38,7 +40,7 @@ cat YOUR_FILE | nc DOCKER_IP 3334
 
 For rsyslog information include an entry in /etc/rsyslog.d with a line like
 
-*.*    @@IP-OF-DOCKER-HOST:3333
+\*.\*    @@IP-OF-DOCKER-HOST:3333
 
 Viewing data
 ============
